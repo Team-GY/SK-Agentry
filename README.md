@@ -17,17 +17,18 @@ AI 기술 도입 시 다양한 산업군(제조, 유통, 금융 등)에서 기�
 ```pgsql
 [User Input]
     ↓
-Architect Agent
+입력 처리 에이전트 (Input Processing Agent)
     ↓
-Data Schema Agent → Research Agent
+편익 식별 에이전트 (Benefit Identification Agent)
     ↓
-ROI Calculator Agent ↔ Sensitivity Analysis Agent
+비용 분석 에이전트 (Cost Analysis Agent)
     ↓
-Visualization Agent ↔ Validator Agent
+ROI 계산 에이전트 (ROI Calculation Agent)
     ↓
-Optimizer Agent (Optional)
+대시보드 및 제안서 에이전트 (Dashboard & Proposal Agent)
     ↓
-Streamlit 대시보드 출력
+[Streamlit 대시보드 출력]
+
 ```
 - 모든 Agent는 Kafka Topic을 통해 통신하며, Orchestrator Agent가 전체 흐름을 관리합니다.
 ---
@@ -68,15 +69,14 @@ ai-roi-analysis/
 ```
 ---
 
-## ⚡ 주요 기능
-
-- **입력 데이터 스키마 검증**: 사용자 입력 유효성 체크
-- **산업별 리서치 데이터 추천**: 업종 평균 절감률 제공
-- **ROI 및 BEP 계산**: 투자 대비 수익 분석
-- **민감도 분석**: 주요 변수 변화에 따른 ROI 시뮬레이션
-- **데이터 검증**: 이상치 탐지 및 경고
-- **시각화**: Streamlit을 통한 대시보드 출력
-- **(옵션) 최적화 추천**: 투자 수익 극대화를 위한 전략 제안
+## 📦 에이전트별 처리 흐름 요약
+| 에이전트                                                | 입력                         | 처리 내용                             | 출력                                       |
+| :-------------------------------------------------- | :------------------------- | :-------------------------------- | :--------------------------------------- |
+| **입력 처리 에이전트**<br>(Input Processing Agent)          | 사용자 입력 (투자 비용, 산업군, AI 기술) | 유효성 검사, 표준화<br>(예: 산업군 코드화)       | `{ investment_cost, industry, ai_tech }` |
+| **편익 식별 에이전트**<br>(Benefit Identification Agent)    | 표준화된 산업군 + AI 기술           | Annoy로 유사 사례 검색<br>편익 유형 및 효과 정량화 | `{ benefit, impact, reference }`         |
+| **비용 분석 에이전트**<br>(Cost Analysis Agent)             | 투자비용, 산업 정보                | Annoy로 유사 프로젝트 비용 추정<br>비용 항목 분석  | `{ category, cost, reference }`          |
+| **ROI 계산 에이전트**<br>(ROI Calculation Agent)          | 편익 데이터 + 비용 데이터            | ROI 공식 적용<br>시나리오별 ROI 산출         | `{ scenario, roi, benefits, costs }`     |
+| **대시보드 및 제안서 에이전트**<br>(Dashboard & Proposal Agent) | ROI 결과 데이터                 | Plotly 기반 시각화<br>PDF 제안서 생성       | Plotly JSON, PDF 제안서                     |
 
 ---
 
