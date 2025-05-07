@@ -1,0 +1,7 @@
+.venv
+.env
+
+# AI 폴더
+AI/test.ipynb
+**/__pycache__
+**/.DS_Store
