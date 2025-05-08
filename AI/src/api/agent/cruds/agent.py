@@ -1,6 +1,9 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
+import os
+from fastapi import HTTPException
+
 from api.user.models.user_report import UserReport
 from api.user.schemas.user_report import UserCreateReport
 
@@ -32,3 +35,14 @@ async def get_report_by_id(db: AsyncSession, report_id: int) -> UserReport | Non
         select(UserReport).where(UserReport.user_report_id == report_id)
     )
     return result.scalar_one_or_none()
+
+
+async def read_report_markdown_content(report: UserReport) -> str:
+    if not os.path.isfile(report.filename):
+        raise HTTPException(status_code=404, detail="Markdown 파일이 존재하지 않습니다.")
+
+    try:
+        with open(report.filename, "r", encoding="utf-8") as f:
+            return f.read()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"파일 읽기 오류: {str(e)}")
