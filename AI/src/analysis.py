@@ -1,19 +1,25 @@
 from utils import search_web, search_docs
 from prompts import recommend_chain, summary_chain, recommend_parser
 import os
+from langchain_openai import ChatOpenAI
+from langchain.chains.summarize import load_summarize_chain
+from langchain.schema import Document
 
 def analyze_company(company_name, db):
     web_context = search_web(company_name)
-    query = f"{company_name} {web_context}"
+    llm = ChatOpenAI(temperature=0, model='gpt-4o-mini', streaming=True)
+    chain = load_summarize_chain(llm, chain_type="stuff")
+    docs = [Document(page_content=web_context)]  # 문서 리스트로 wrapping
+    query = chain.run(docs)
     pdf_context = search_docs(query, db)
 
-    # Agent 추천
-    recommended_agents = recommend_chain.run({
-        "company_name": company_name,
-        "web_context": web_context,
-        "pdf_context": pdf_context,
-        "format_instructions": recommend_parser.get_format_instructions()
-    })
+    # # Agent 추천
+    # recommended_agents = recommend_chain.run({
+    #     "company_name": company_name,
+    #     "web_context": web_context,
+    #     "pdf_context": pdf_context,
+    #     "format_instructions": recommend_parser.get_format_instructions()
+    # })
 
     # 요약 리포트
     summary_report = summary_chain.run({
@@ -38,6 +44,6 @@ def analyze_company(company_name, db):
     print(f"✅ {filename} 저장 완료!")
 
     return {
-        "recommended_agents": recommended_agents,
+        # "recommended_agents": recommended_agents,
         "summary_report_file": filename
     }
