@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Enum, Float, String, Integer, DateTime
 from datetime import datetime
+from sqlalchemy.orm import relationship
 from api.db import Base
 from api.utils.enums import IndustryEnum, InterestEnum  
 
@@ -16,3 +17,6 @@ class User(Base):
     budget_size = Column(Float, nullable=False)
     created_date = Column(DateTime, default=datetime.utcnow)
     modified_date = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+reports = relationship("UserReport", back_populates="user", cascade="all, delete-orphan")
+agents = relationship("Agent", back_populates="creator", cascade="all, delete-orphan")

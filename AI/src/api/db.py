@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncAttrs
 
 # ✅ MySQL 비동기 데이터베이스 URL
 # ASYNC_DB_URL = "mysql+aiomysql://manager@db:3306/demo?charset=utf8mb4"
-ASYNC_DB_URL = "mysql+aiomysql://manager:SqlDba-1@0.0.0.0:53303/demo?charset=utf8mb4"
+ASYNC_DB_URL = "mysql+aiomysql://root@db:3306/sk-agentry?charset=utf8mb4"
 
 # ✅ 비동기 데이터베이스 엔진 생성
 async_engine = create_async_engine(ASYNC_DB_URL, echo=True)

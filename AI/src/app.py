@@ -2,7 +2,6 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from api.user.routers.user import router as user_router
 from agents import AGENT_REGISTRY
-from analysis import analyze_company
 
 app = FastAPI()
 

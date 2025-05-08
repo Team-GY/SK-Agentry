@@ -13,3 +13,8 @@ class InterestEnum(str, Enum):
 class VisibilityEnum(str, Enum):
     PUBLIC = "PUBLIC"
     PRIVATE = "PRIVATE"
+
+
+class ReportTypeEnum(str, Enum):
+    PDF = "PDF"
+    MD = "MD"

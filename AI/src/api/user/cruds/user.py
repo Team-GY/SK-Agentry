@@ -1,9 +1,8 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
-
 from api.user.models.user import User
-from api.user.schemas.user import UserCreate, User as UserSchema
+from api.user.schemas.user import UserCreate, UserCreateResponse as UserSchema
 from api.utils.auth import hash_password  # 비밀번호 해시가 필요하다면
 
 # ✅ 회원 생성
