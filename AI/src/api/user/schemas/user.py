@@ -22,6 +22,7 @@ class UserCreate(UserBase):
 class UserCreateResponse(UserBase):
     user_id: int = Field(..., example=1)
     msg: str = Field(..., example="사용자가 성공적으로 생성되었습니다.")
+    success: bool = Field(..., example=True)
 
     model_config = ConfigDict(from_attributes=True)
 
