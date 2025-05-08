@@ -20,7 +20,7 @@ class GenericInput(BaseModel):
     input_data: dict
 
 # 유저 로직
-app.include_router(user_router, prefix="/auth")
+app.include_router(user_router)
 app.include_router(auth_router)
 
 # 공통 agent 실행 방식

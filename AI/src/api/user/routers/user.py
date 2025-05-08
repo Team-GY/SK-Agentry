@@ -6,7 +6,7 @@ from api.user.models.user import User as UserModel
 from api.user.schemas.user import UserCreate, UserCreateResponse, UserRead as UserSchema
 import api.user.cruds.user as user_crud
 
-router = APIRouter()
+router = APIRouter(prefix="/user", tags=["User"])
 
 
 # ✅ 회원가입은 인증 불필요
