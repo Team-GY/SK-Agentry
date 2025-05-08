@@ -2,8 +2,14 @@ from fastapi import FastAPI, Depends
 from pydantic import BaseModel
 from api.user.routers.user import router as user_router
 from agents import AGENT_REGISTRY
+import asyncio
+from api.init_db import init_models
 
 app = FastAPI()
+
+@app.on_event("startup")
+async def on_startup():
+    await init_models()
 
 class CompanyInput(BaseModel):
     user_id: int

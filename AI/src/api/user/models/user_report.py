@@ -15,4 +15,4 @@ class UserReport(Base):
     created_date = Column(DateTime, default=datetime.utcnow)
     modified_date = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-user = relationship("User", back_populates="reports")
+    user = relationship("User", back_populates="reports")

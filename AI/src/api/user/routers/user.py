@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from api.db import get_db
 from api.user.models.user import User as UserModel
 from api.user.models.user_report import UserReport
-from api.user.schemas.user import UserCreate, UserCreateResponse as UserSchema
+from api.user.schemas.user import UserCreate, UserCreateResponse, UserRead as UserSchema
 import api.user.cruds.user as user_crud
 
 router = APIRouter()
@@ -47,11 +47,11 @@ async def list_users(db: AsyncSession = Depends(get_db)):
 
 # 특정 유저 조회
 @router.get("/{user_id}", response_model=UserSchema)
-async def get_user(user_id: str, db: AsyncSession = Depends(get_db)):
+async def get_user(user_id: int, db: AsyncSession = Depends(get_db)):
     user = await user_crud.get_user_by_id(db, user_id)
-    if user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-    return UserSchema.model_validate(user)
+    if not user:
+        raise HTTPException(status_code=404, detail="사용자를 찾을 수 없습니다.")
+    return user
 
 
 # 유저 수정
