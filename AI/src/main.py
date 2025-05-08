@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 def main():
     load_dotenv()
     db = load_vector_db()
-    company_name = "삼성전자"
+    company_name = "sk하이닉스"
     result = analyze_company(company_name, db)
 
     print("\n=== 추천된 AI Agent ===")
