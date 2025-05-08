@@ -1,28 +1,13 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from pydantic import BaseModel
 from api.user.routers.user import router as user_router
 from agents import AGENT_REGISTRY
 
 app = FastAPI()
 
-# # 에이전트 인스턴스
-# ai_adoption_agent = AIAdoptionAgent()
-# auto_chatbot_agent = AutoChatbotAgent()
-
-# # agent 레지스트리 등록
-# AGENT_REGISTRY = {
-#     "ai_adoption": ai_adoption_agent,
-#     "auto_chatbot": auto_chatbot_agent,
-# }
-
-# # 입력 스키마
-# class AIAdoptionInput(BaseModel):
-#     company_name: str
-#     investment_amount: int
-#     ai_goal: str
-
-# class ChatInput(BaseModel):
-#     user_message: str
+class CompanyInput(BaseModel):
+    user_id: int
+    company_name: str
 
 class GenericInput(BaseModel):
     input_data: dict
@@ -30,18 +15,25 @@ class GenericInput(BaseModel):
 # 유저 로직
 app.include_router(user_router, prefix="/auth")
 
-# # 직접 호출하는 방식
-# @app.post("/run-ai-adoption")
-# async def run_ai_adoption(input_data: AIAdoptionInput):
-#     result = ai_adoption_agent.run(input_data.dict())
-#     content = result.content if hasattr(result, "content") else str(result)
-#     return {"report": content}
+# # 기업 분석 실행 API
+# @app.post("/analyze")
+# def analyze(input_data: CompanyInput, db_session: Session = Depends(get_db)):
+#     vector_db = load_vector_db()
+#     result = analyze_company(input_data.company_name, vector_db)
 
-# @app.post("/run-auto-chatbot")
-# async def run_auto_chatbot(input_data: ChatInput):
-#     result = auto_chatbot_agent.chat(input_data.user_message)
-#     return {"response": result}
+#     report = UserReport(
+#         user_id=input_data.user_id,  # CompanyInput 모델에 user_id 추가 필요
+#         filename=result["summary_report_file"],
+#         format="md"
+#     )
+#     db_session.add(report)
+#     db_session.commit()
 
+#     return {
+#         "report_id": report.user_report_id,
+#         "filename": report.filename,
+#         "format": report.format
+#     }
 # 공통 agent 실행 방식
 @app.post("/run_agent/{agent_id}")
 async def run_agent(agent_id: str, input_data: GenericInput):
@@ -51,13 +43,4 @@ async def run_agent(agent_id: str, input_data: GenericInput):
     result = agent.run(input_data.input_data)
     return {"result": result}
 
-
-# ## 기업 분석 에이전트 API
-# @app.post("/run-analyze")
-# def analyze(input_data: CompanyInput):
-#     result = analyze_company(input_data.company_name, db)
-#     return {
-#         # "recommended_agents": result["recommended_agents"],
-#         "report_file": result["summary_report_file"]
-#     }
 

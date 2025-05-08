@@ -1,5 +1,5 @@
 # main.py
-from AI.src.agents.analysis import analyze_company
+from agents.analysis import analyze_company
 from utils import load_vector_db
 import json
 from dotenv import load_dotenv
