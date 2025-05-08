@@ -9,7 +9,7 @@ class UserBase(BaseModel):
     name: str = Field(..., example="SK 하이닉스")
     industry: IndustryEnum = Field(..., example="제조")
     scale: int = Field(..., example=1000)
-    interests: InterestEnum = Field(..., example="LLM")
+    interests: InterestEnum = Field(..., example="스마트 팩토리")
     budget_size: float = Field(..., example=100000000.0)
 
     model_config = ConfigDict(from_attributes=True)

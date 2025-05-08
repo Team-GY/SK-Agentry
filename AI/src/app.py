@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Depends
 from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 from api.user.routers.user import router as user_router
 from api.auth.routers.auth import router as auth_router
 from agents import AGENT_REGISTRY
@@ -7,6 +8,15 @@ import asyncio
 from api.init_db import init_models
 
 app = FastAPI()
+
+# CORS 설정 추가
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.on_event("startup")
 async def on_startup():
