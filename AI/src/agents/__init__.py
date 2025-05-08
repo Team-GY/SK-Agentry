@@ -1,7 +1,7 @@
 from .ai_adoption import AIAdoptionAgent
 from .auto_chat import AutoChatbotAgent
 from .weekly_news import WeeklyNewsAgent
-from utils import search_news, search_docs, search_web, extract_keywords
+from tools import search_news, search_docs, search_web, extract_keywords
 from dotenv import load_dotenv
 
 load_dotenv()

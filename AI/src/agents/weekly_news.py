@@ -1,7 +1,7 @@
 from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 from langchain.agents import create_tool_calling_agent, AgentExecutor
-from utils import search_news
+from tools import search_news
 
 
 class WeeklyNewsAgent:

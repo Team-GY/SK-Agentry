@@ -17,6 +17,7 @@ async def register_user(user_data: UserCreate, db: AsyncSession = Depends(get_db
         {
             **new_user.__dict__,
             "msg": "사용자가 성공적으로 생성되었습니다.",
+            "success": True,
         },
         from_attributes=True,
     )

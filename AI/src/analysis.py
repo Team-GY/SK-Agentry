@@ -1,4 +1,4 @@
-from utils import search_web, search_docs
+from tools import search_web, search_docs
 from prompts import summary_chain
 import os
 from langchain_openai import ChatOpenAI
