@@ -30,6 +30,27 @@ class GenericInput(BaseModel):
 app.include_router(user_router)
 app.include_router(auth_router)
 
+# 기업 분석 실행 API
+@app.post("/analyze")
+def analyze(input_data: CompanyInput, db_session: Session = Depends(get_db)):
+    vector_db = load_vector_db()
+    result = analyze_company(input_data.company_name, vector_db)
+
+    report = UserReport(
+        user_id=input_data.user_id,
+        filename=result["summary_report_file"],
+        format="md"
+    )
+    db_session.add(report)
+    db_session.commit()
+    db_session.refresh(report)
+
+    return {
+        "report_id": report.user_report_id,
+        "filename": report.filename,
+        "format": report.format
+    }
+
 # 공통 agent 실행 방식
 @app.post("/run_agent/{agent_id}")
 async def run_agent(agent_id: str, input_data: GenericInput):
