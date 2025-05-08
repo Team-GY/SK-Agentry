@@ -14,5 +14,4 @@ class UserReport(Base):
     format = Column(Enum(ReportTypeEnum), nullable=False)
     created_date = Column(DateTime, default=datetime.utcnow)
     modified_date = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
     user = relationship("User", back_populates="reports")

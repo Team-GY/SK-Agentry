@@ -11,7 +11,6 @@ class UserBase(BaseModel):
     scale: int = Field(..., example=1000)
     interests: InterestEnum = Field(..., example="LLM")
     budget_size: float = Field(..., example=100000000.0)
-    reports: List[UserReportResponse] = Field(default_factory=list)
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -29,5 +28,6 @@ class UserCreateResponse(UserBase):
 
 class UserRead(UserBase):
     user_id: int
+    reports: List[UserReportResponse] = Field(default_factory=list)
 
     model_config = ConfigDict(from_attributes=True)
