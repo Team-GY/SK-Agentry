@@ -24,11 +24,20 @@ async def run_company_analysis(
     # ✅ 회사명은 로그인된 유저의 이름으로 자동 설정
     company_name = current_user.name
 
+    # ✅ 유저 기반 분석 메타 정보 구성
+    user_data = {
+        "industry": current_user.industry.value if current_user.industry else "정보 없음",
+        "scale": "스타트업" if current_user.scale < 50 else "중소기업" if current_user.scale < 300 else "대기업",
+        "interests": current_user.interests.value if current_user.interests else "정보 없음",
+        "budget_size": current_user.budget_size,
+        "created_date": current_user.created_date,
+    }
+
     # 1. 벡터 DB 불러오기
     vector_db = load_vector_db()
 
     # 2. 분석 실행
-    result = analyze_company(company_name, vector_db)
+    result = analyze_company(company_name, vector_db, user_data)
 
     # 3. 리포트 저장
     report_data = UserCreateReport(
@@ -39,6 +48,7 @@ async def run_company_analysis(
     new_report = await report_crud.create_user_report(db, report_data)
 
     return new_report
+
 
 
 # ✅ 리포트 전체 조회 (현재 로그인 유저 기준)
