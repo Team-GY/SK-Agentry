@@ -17,5 +17,5 @@ class User(Base):
     budget_size = Column(Float, nullable=False)
     created_date = Column(DateTime, default=datetime.utcnow)
     modified_date = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
-    reports = relationship("UserReport", back_populates="user", cascade="all, delete-orphan")
+    
+    reports = relationship("UserReport", back_populates="user")

@@ -2,14 +2,13 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from api.db import get_db
 from api.user.models.user import User as UserModel
-from api.user.models.user_report import UserReport
 from api.user.schemas.user import UserCreate, UserCreateResponse, UserRead as UserSchema
 import api.user.cruds.user as user_crud
 
 router = APIRouter()
 
 # 회원가입
-@router.post("/register", response_model=UserSchema)
+@router.post("/register", response_model=UserCreateResponse)
 async def register_user(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
     new_user = UserModel(
         id=user_data.id,
@@ -20,22 +19,17 @@ async def register_user(user_data: UserCreate, db: AsyncSession = Depends(get_db
         interests=user_data.interests,
         budget_size=user_data.budget_size,
     )
-
     db.add(new_user)
     await db.flush()
-
-    for report in user_data.reports:
-        new_report = UserReport(
-            user_id=new_user.user_id,
-            filename=report.filename,
-            format=report.format,
-        )
-        db.add(new_report)
-
     await db.commit()
-    await db.refresh(new_user)
 
-    return UserSchema.model_validate(new_user)
+    return UserCreateResponse.model_validate(
+        {
+            **new_user.__dict__, 
+            "msg": "사용자가 성공적으로 생성되었습니다.",
+        },
+        from_attributes=True,
+    )
 
 
 # 전체 유저 조회

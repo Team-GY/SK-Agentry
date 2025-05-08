@@ -7,15 +7,16 @@ from api.user.schemas.user import UserCreate, UserRead
 from api.utils.auth import hash_password  # 비밀번호 해시가 필요하다면
 from sqlalchemy.future import select
 from fastapi import HTTPException
+from analysis import analyze_company
 
-
-# ✅ 회원 생성
+# 회원가입
 async def create_user(db: AsyncSession, user_data: UserCreate) -> User:
-    # 유저 등록 핸들러 내부 예시
+    # 1. ID 중복 확인
     existing_user = await db.execute(select(User).where(User.id == user_data.id))
     if existing_user.scalar_one_or_none():
         raise HTTPException(status_code=400, detail="이미 존재하는 사용자 ID입니다.")
     
+    # 2. User 생성
     new_user = User(
         id=user_data.id,
         password=hash_password(user_data.password),
@@ -26,12 +27,12 @@ async def create_user(db: AsyncSession, user_data: UserCreate) -> User:
         budget_size=user_data.budget_size
     )
     db.add(new_user)
-    try:
-        await db.commit()
-    except IntegrityError:
-        await db.rollback()
-        raise
+    await db.flush()  # user_id 확보를 위해 flush
+
+    # 4. 커밋 및 refresh
+    await db.commit()
     await db.refresh(new_user)
+
     return new_user
 
 async def get_user_by_id(db: AsyncSession, user_id: int) -> User | None:
@@ -44,7 +45,9 @@ async def get_user_by_id(db: AsyncSession, user_id: int) -> User | None:
 
 # ✅ 유저 전체 조회 (예: 관리용)
 async def get_all_users(db: AsyncSession) -> list[User]:
-    result = await db.execute(select(User))
+    result = await db.execute(
+        select(User).options(selectinload(User.reports))
+    )
     return result.scalars().all()
 
 # ✅ 유저 정보 수정
