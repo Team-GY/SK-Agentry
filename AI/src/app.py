@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from api.user.routers.user import router as user_router
 from agents import AGENT_REGISTRY
+from analysis import analyze_company
 
 app = FastAPI()
 
@@ -50,4 +51,14 @@ async def run_agent(agent_id: str, input_data: GenericInput):
         return {"error": f"Agent '{agent_id}' not found."}
     result = agent.run(input_data.input_data)
     return {"result": result}
+
+
+# ## 기업 분석 에이전트 API
+# @app.post("/run-analyze")
+# def analyze(input_data: CompanyInput):
+#     result = analyze_company(input_data.company_name, db)
+#     return {
+#         # "recommended_agents": result["recommended_agents"],
+#         "report_file": result["summary_report_file"]
+#     }
 

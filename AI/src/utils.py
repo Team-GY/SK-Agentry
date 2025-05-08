@@ -13,7 +13,7 @@ def search_web(company_name):
     return "\n".join(snippets)
 
 def search_docs(query, db):
-    results = db.similarity_search(query, k=3)
+    results = db.similarity_search(query, k=10)
     return "\n".join([doc.page_content for doc in results])
 
 def load_vector_db():
