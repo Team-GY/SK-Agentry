@@ -1,13 +1,21 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import Integer, select
+from sqlalchemy.orm import selectinload
 from sqlalchemy.exc import IntegrityError
-
 from api.user.models.user import User
-from api.user.schemas.user import UserCreate, User as UserSchema
+from api.user.schemas.user import UserCreate, UserRead
 from api.utils.auth import hash_password  # 비밀번호 해시가 필요하다면
+from sqlalchemy.future import select
+from fastapi import HTTPException
+
 
 # ✅ 회원 생성
 async def create_user(db: AsyncSession, user_data: UserCreate) -> User:
+    # 유저 등록 핸들러 내부 예시
+    existing_user = await db.execute(select(User).where(User.id == user_data.id))
+    if existing_user.scalar_one_or_none():
+        raise HTTPException(status_code=400, detail="이미 존재하는 사용자 ID입니다.")
+    
     new_user = User(
         id=user_data.id,
         password=hash_password(user_data.password),
@@ -26,10 +34,11 @@ async def create_user(db: AsyncSession, user_data: UserCreate) -> User:
     await db.refresh(new_user)
     return new_user
 
-# ✅ 회원 ID(email)으로 조회
-async def get_user_by_id(db: AsyncSession, user_id: str) -> User | None:
+async def get_user_by_id(db: AsyncSession, user_id: int) -> User | None:
     result = await db.execute(
-        select(User).where(User.id == user_id)
+        select(User)
+        .options(selectinload(User.reports))  
+        .where(User.user_id == user_id)
     )
     return result.scalars().first()
 
@@ -39,7 +48,7 @@ async def get_all_users(db: AsyncSession) -> list[User]:
     return result.scalars().all()
 
 # ✅ 유저 정보 수정
-async def update_user(db: AsyncSession, original: User, update_data: UserSchema) -> User:
+async def update_user(db: AsyncSession, original: User, update_data: UserCreate) -> User:
     original.name = update_data.name
     original.industry = update_data.industry
     original.scale = update_data.scale
