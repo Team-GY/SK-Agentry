@@ -1,7 +1,7 @@
 from langchain.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
 from langchain.agents import create_tool_calling_agent, AgentExecutor
-from utils import search_web
+from tools import search_web
 
 class AIAdoptionAgent:
     def __init__(self, tools: list = None, temperature: float = 0.3, model: str = "gpt-4o-mini"):

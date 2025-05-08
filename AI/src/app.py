@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from api.user.routers.user import router as user_router
 from api.auth.routers.auth import router as auth_router
+from api.agent.routers.agent import router as agent_router
 from agents import AGENT_REGISTRY
 from agents import TOOL_REGISTRY
 import asyncio
@@ -10,8 +11,7 @@ from api.init_db import init_models
 from sqlalchemy.orm import Session
 from api.user.models.user_report import UserReport
 from api.db import get_db
-from utils import load_vector_db
-from analysis import analyze_company
+from tools import load_vector_db
 
 app = FastAPI()
 
@@ -40,26 +40,7 @@ class GenericInput(BaseModel):
 app.include_router(user_router)
 app.include_router(auth_router)
 
-# 기업 분석 실행 API
-@app.post("/analyze")
-def analyze(input_data: CompanyInput, db_session: Session = Depends(get_db)):
-    vector_db = load_vector_db()
-    result = analyze_company(input_data.company_name, vector_db)
-
-    report = UserReport(
-        user_id=input_data.user_id,
-        filename=result["summary_report_file"],
-        format="md"
-    )
-    db_session.add(report)
-    db_session.commit()
-    db_session.refresh(report)
-
-    return {
-        "report_id": report.user_report_id,
-        "filename": report.filename,
-        "format": report.format
-    }
+app.include_router(agent_router)
 
 # 공통 agent 실행 방식
 @app.post("/run_agent/{agent_id}")
