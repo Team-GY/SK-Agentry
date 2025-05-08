@@ -62,3 +62,19 @@ async def get_report(
     if report is None or report.user_id != current_user.user_id:
         raise HTTPException(status_code=404, detail="리포트를 찾을 수 없습니다.")
     return report
+
+
+@router.get("/report/{report_id}/content", response_model=str)
+async def get_report_content(
+    report_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: UserModel = Depends(get_current_user)
+):
+    # 1. 리포트 조회
+    report = await report_crud.get_report_by_id(db, report_id)
+    if report is None or report.user_id != current_user.user_id:
+        raise HTTPException(status_code=404, detail="리포트를 찾을 수 없습니다.")
+
+    # 2. 파일 읽기 (CRUD 함수 활용)
+    content = await report_crud.read_report_markdown_content(report)
+    return content
