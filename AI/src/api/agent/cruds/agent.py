@@ -23,6 +23,8 @@ async def create_user_report(db: AsyncSession, report_data: UserCreateReport) ->
     return new_report
 
 # ✅ 추천 에이전트 저장
+from sqlalchemy import select, and_
+
 async def create_recommended_agents(
     db: AsyncSession,
     user_id: int,
@@ -33,16 +35,30 @@ async def create_recommended_agents(
     for agent_info in recommended_agents:
         agent_name = agent_info.get("에이전트명")
 
-        # Agent 테이블에서 agent_id 찾기
+        # Agent 조회
         result = await db.execute(select(Agent).where(Agent.name == agent_name))
         agent_record = result.scalars().first()
 
         if not agent_record:
-            # 없는 경우 → 스킵하거나 로그 처리
-            print(f"⚠️ Agent '{agent_name}' not found in Agent table.")
+            print(f"⚠️ Agent '{agent_name}' not found.")
             continue
 
-        # 추천 에이전트 레코드 생성
+        # 중복 추천 여부 확인
+        duplicate_check = await db.execute(
+            select(RecommendedAgent).where(
+                and_(
+                    RecommendedAgent.user_id == user_id,
+                    RecommendedAgent.agent_id == agent_record.agent_id
+                )
+            )
+        )
+        exists = duplicate_check.scalar_one_or_none()
+
+        if exists:
+            print(f"ℹ️ Agent '{agent_name}' already recommended. Skipping.")
+            continue
+
+        # 추천 저장
         new_rec_agent = RecommendedAgent(
             user_id=user_id,
             agent_id=agent_record.agent_id
@@ -59,6 +75,12 @@ async def get_reports_by_user_id(db: AsyncSession, user_id: int) -> list[UserRep
     result = await db.execute(
         select(UserReport).where(UserReport.user_id == user_id)
     )
+    return result.scalars().all()
+
+
+# ✅ 전체 에이전트 목록 조회
+async def get_all_agents(db: AsyncSession) -> list[Agent]:
+    result = await db.execute(select(Agent))
     return result.scalars().all()
 
 
