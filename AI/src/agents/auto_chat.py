@@ -3,6 +3,14 @@ from langchain.schema import SystemMessage, AIMessage, HumanMessage
 
 class AutoChatbotAgent:
     display_name = "자동 대화 에이전트"
+    description = (
+        "기업의 자주 묻는 질문(FAQ)이나 특정 주제에 대한 상담을 자동으로 처리하는 대화형 에이전트입니다. "
+        "사용자가 입력한 질문에 대해 자연스럽고 정확한 응답을 제공하며, "
+        "고객센터 또는 내부 교육용 챗봇으로 활용할 수 있습니다."
+    )
+    category = "고객지원"
+    features = "- 자주 묻는 질문 자동 응답\n- 고객 상담 지원\n- 내부 교육 자료 제공"
+
     def __init__(self, company_name: str = "기본회사", faq_topic: str = "자주 묻는 질문"):
         self.company_name = company_name
         self.faq_topic = faq_topic

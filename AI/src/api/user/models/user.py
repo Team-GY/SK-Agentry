@@ -19,3 +19,4 @@ class User(Base):
     modified_date = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     reports = relationship("UserReport", back_populates="user")
+    recommended_agents = relationship("RecommendedAgent", back_populates="user")

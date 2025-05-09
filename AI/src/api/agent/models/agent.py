@@ -15,3 +15,5 @@ class Agent(Base):
     features = Column(Text)                                      # 주요 기능 (Markdown 혹은 JSON 문자열)
     is_active = Column(Boolean, default=True)                    # 활성화 여부
     image_url = Column(String(256), nullable=True)               # 이미지 URL
+
+    recommended_agents = relationship("RecommendedAgent", back_populates="agent")

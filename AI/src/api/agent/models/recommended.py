@@ -11,4 +11,4 @@ class RecommendedAgent(Base):
     agent_id = Column(Integer, ForeignKey("agents.agent_id"), nullable=False)
 
     user = relationship("User", back_populates="recommended_agents")
-    agent = relationship("Agent")
+    agent = relationship("Agent", back_populates="recommended_agents")
