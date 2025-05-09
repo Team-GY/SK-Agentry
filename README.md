@@ -71,13 +71,13 @@
 ```bash
 # 1. 프로젝트 클론
 git clone https://github.com/sk-agentry/agent-market.git
-cd agent-market
+cd AI/src
 
-# 2. Docker 기반 실행
-docker-compose up --build
+# 2. uvicorn으로 실행
+uvicorn app:app --reload
 
-# 3. Streamlit 또는 FastAPI 대시보드 접속
-http://localhost:8000 또는 8501
+# 3. FastAPI 대시보드 접속
+http://localhost:8000 
 ```
 ---
 
