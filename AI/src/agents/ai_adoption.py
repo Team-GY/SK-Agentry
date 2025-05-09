@@ -1,13 +1,13 @@
 from langchain.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
 from langchain.agents import create_tool_calling_agent, AgentExecutor
-from tools import search_web
+from tools import search_company
 
 class AIAdoptionAgent:
     def __init__(self, tools: list = None, temperature: float = 0.3, model: str = "gpt-4o-mini"):
         self.llm = ChatOpenAI(temperature=temperature, model=model, streaming=True)
 
-        base_tools = [search_web]
+        base_tools = [search_company]
         if tools:
             base_tools.extend(tools)
 

@@ -1,6 +1,7 @@
 from langchain_community.tools import TavilySearchResults
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import OpenAIEmbeddings
+from langchain_teddynote.tools.tavily import TavilySearch
 from langchain_core.tools import tool
 from langchain_openai import ChatOpenAI
 from typing import List, Dict, Annotated
@@ -8,13 +9,37 @@ from langchain_teddynote.tools import GoogleNews
 import os
 
 @tool
-def search_web(company_name: str) -> str:
-    """회사 이름으로 웹 검색 결과 반환."""
-    from langchain_community.tools import TavilySearchResults
+def search_company(company_name: str) -> str:
+    """회사 이름으로 웹 검색 결과 반환 (기업 정보 + 기술 도입 정보)."""
+
     search_tool = TavilySearchResults(k=5)
-    results = search_tool.invoke({"query": f"{company_name} 기업 정보"})
+
+    # 첫 번째 쿼리: 일반 기업 정보
+    query1 = f"{company_name} 기업 정보"
+    results1 = search_tool.invoke({"query": query1})
+
+    # 두 번째 쿼리: 기술 도입 관련 정보
+    query2 = f"{company_name} 기술 도입 디지털 전환 AI"
+    results2 = search_tool.invoke({"query": query2})
+
+    # 결과 합치기
+    combined_snippets = []
+
+    for res in results1:
+        combined_snippets.append(f"[일반정보]\n- 제목: {res.get('title', '')}\n  내용: {res.get('content', '')}")
+
+    for res in results2:
+        combined_snippets.append(f"[기술도입]\n- 제목: {res.get('title', '')}\n  내용: {res.get('content', '')}")
+
+    return "\n\n".join(combined_snippets)
+
+@tool
+def search_web(input: str) -> str:
+    """웹 검색 결과 반환."""
+    search_tool = TavilySearchResults(k=5)
+    results = search_tool.invoke({"query": f"{input}"})
     snippets = [
-        f"- 제목: {res.get('title', '')}\n  내용: {res.get('content', '')}\n  URL: {res.get('url', '')}"
+        f"- 제목: {res.get('title', '')}\n  내용: {res.get('content', '')}"
         for res in results
     ]
     return "\n".join(snippets)
