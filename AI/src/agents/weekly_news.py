@@ -5,6 +5,7 @@ from tools import search_news
 
 
 class WeeklyNewsAgent:
+    display_name = "주간 뉴스 브리핑 에이전트"
     def __init__(self, topic: str = "기술", tools: list = None, temperature=0, model_name="gpt-4o-mini"):
         self.topic = topic
         self.llm = ChatOpenAI(temperature=temperature, model=model_name, streaming=True)

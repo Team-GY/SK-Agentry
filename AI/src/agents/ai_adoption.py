@@ -4,6 +4,10 @@ from langchain.agents import create_tool_calling_agent, AgentExecutor
 from tools import search_company
 
 class AIAdoptionAgent:
+    display_name = "AI 도입 전략 추천 에이전트"
+    description=""
+    category="기본"  
+    
     def __init__(self, tools: list = None, temperature: float = 0.3, model: str = "gpt-4o-mini"):
         self.llm = ChatOpenAI(temperature=temperature, model=model, streaming=True)
 
