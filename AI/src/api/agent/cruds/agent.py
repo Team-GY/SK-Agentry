@@ -2,6 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 import os
 from fastapi import HTTPException
+from sqlalchemy.orm import selectinload
 
 from api.agent.models.recommended import RecommendedAgent
 from api.agent.models.agent import Agent
@@ -78,3 +79,25 @@ async def read_report_markdown_content(report: UserReport) -> str:
             return f.read()
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"파일 읽기 오류: {str(e)}")
+    
+# ✅ 추천 에이전트 가져오기
+async def get_recommended_agents_by_user(
+    db: AsyncSession, user_id: int
+) -> list[dict]:
+    result = await db.execute(
+        select(RecommendedAgent)
+        .options(selectinload(RecommendedAgent.agent))
+        .where(RecommendedAgent.user_id == user_id)
+    )
+    records = result.scalars().all()
+    return [
+        {
+            "user_id": rec.user_id,
+            "agent_id": rec.agent.agent_id,
+            "agent_name": rec.agent.name,
+            "display_name": rec.agent.display_name,
+            "category": rec.agent.category,
+            "llm_type" : rec.agent.llm_type,
+        }
+        for rec in records
+    ]

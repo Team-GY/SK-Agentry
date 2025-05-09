@@ -70,7 +70,15 @@ async def run_company_analysis(
     
     return new_report
 
-
+@router.get("/getRecom", summary="자기 자신의 추천 에이전트 목록 조회")
+async def get_my_recommended_agents(
+    db: AsyncSession = Depends(get_db),
+    current_user: UserModel = Depends(get_current_user)
+):
+    result = await report_crud.get_recommended_agents_by_user(db, current_user.user_id)
+    if not result:
+        raise HTTPException(status_code=404, detail="추천 에이전트가 없습니다.")
+    return result
 
 # ✅ 리포트 전체 조회 (현재 로그인 유저 기준)
 @router.get("/", response_model=list[UserReportResponse])
@@ -109,3 +117,5 @@ async def get_report_content(
     # 2. 파일 읽기 (CRUD 함수 활용)
     content = await report_crud.read_report_markdown_content(report)
     return content
+
+

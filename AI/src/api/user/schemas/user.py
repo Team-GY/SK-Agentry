@@ -1,5 +1,6 @@
+from datetime import datetime
 from typing import List
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict, field_serializer
 from api.user.schemas.user_report import UserCreateReport, UserReportResponse
 from api.utils.enums import IndustryEnum, InterestEnum  
 
@@ -29,6 +30,7 @@ class UserCreateResponse(UserBase):
 
 class UserRead(UserBase):
     user_id: int
+    created_date: datetime
     reports: List[UserReportResponse] = Field(default_factory=list)
 
     model_config = ConfigDict(from_attributes=True)
