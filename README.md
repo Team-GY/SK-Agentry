@@ -32,21 +32,8 @@
 - 각 에이전트는 실제 입력값을 기반으로 **Try-before-you-buy** 시뮬레이션 가능
 
 ### ✅ 4. 마이페이지 리포트 관리
-- 과거 기업 분석 결과와 추천 Agent 히스토리를 조회 가능
-- 리포트는 Markdown 및 PDF로 다운로드 가능
-
----
-
-## 🧩 시스템 구성도
-
-```mermaid
-flowchart TD
-    UserInput["기업 정보 입력"] -->|Kafka| Analyzer["AI 기업 분석 엔진"]
-    Analyzer --> Report["디지털 전환 리포트 생성"]
-    Analyzer --> Recommender["Agent 추천"]
-    Recommender --> Dashboard["에이전트 마켓 대시보드"]
-    Dashboard --> Simulator["Agent 시뮬레이터"]
-```
+- 과거 기업 분석 결과와 구매한 Agent 히스토리를 조회 가능
+- 리포트 재작성 요청 가능
 
 ---
 
