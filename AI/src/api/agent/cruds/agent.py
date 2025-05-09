@@ -101,3 +101,26 @@ async def get_recommended_agents_by_user(
         }
         for rec in records
     ]
+
+# ✅ 단일 에이전트 상세 조회
+async def get_agent_by_id(db: AsyncSession, agent_id: int) -> dict | None:
+    result = await db.execute(
+        select(Agent).where(Agent.agent_id == agent_id)
+    )
+    agent = result.scalar_one_or_none()
+
+    if not agent:
+        return None
+
+    return {
+        "agent_id": agent.agent_id,
+        "name": agent.name,
+        "display_name": agent.display_name,
+        "description": agent.description,
+        "category": agent.category,
+        "llm_type": agent.llm_type,
+        "language": agent.language,
+        "features": agent.features,
+        "is_active": agent.is_active,
+        "image_url": agent.image_url,
+    }

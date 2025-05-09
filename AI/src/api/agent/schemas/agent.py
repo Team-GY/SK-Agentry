@@ -14,9 +14,17 @@ class AgentBase(BaseModel):
 class AgentCreate(AgentBase):
     pass
 
-class AgentResponse(AgentBase):
+class AgentResponse(BaseModel):
     agent_id: int
+    name: str
+    display_name: str
+    description: Optional[str]
+    category: Optional[str]
+    llm_type: Optional[str]
+    language: Optional[str]
+    features: Optional[str]
     is_active: bool
+    image_url: Optional[str]
 
     class Config:
         orm_mode = True
