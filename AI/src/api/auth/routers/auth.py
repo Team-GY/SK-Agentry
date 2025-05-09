@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from pydantic import BaseModel, Field
 
+from api.user.schemas.user import UserCreateResponse
 from api.db import get_db
 from api.user.models.user import User as UserModel
 from api.auth.auth import verify_password, create_access_token
@@ -27,4 +28,18 @@ async def login(request: LoginRequest, db: AsyncSession = Depends(get_db)):
         )
 
     access_token = create_access_token(data={"sub": str(user.user_id)})
-    return {"access_token": access_token, "token_type": "bearer"}
+
+     # ✅ 사용자 정보와 함께 반환
+    user_response = UserCreateResponse(
+        user_id=user.user_id,
+        id=user.id,
+        name=user.name,
+        industry=user.industry,
+        scale=user.scale,
+        interests=user.interests,
+        budget_size=user.budget_size,
+        msg="로그인 성공",
+        success=True
+    )
+
+    return {"access_token": access_token, "token_type": "bearer", "user": user_response}

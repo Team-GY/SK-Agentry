@@ -12,6 +12,8 @@ from api.agent.cruds import agent as report_crud
 from analysis import analyze_company  # 분석 로직 및 벡터 DB 로더
 from pydantic import BaseModel
 from tools import load_vector_db  # 벡터 DB 로더
+from sqlalchemy import select, desc
+from api.user.models.user_report import UserReport
 
 router = APIRouter(prefix="/agent", tags=["Agent"])
 
@@ -24,13 +26,24 @@ async def run_company_analysis(
     # ✅ 회사명은 로그인된 유저의 이름으로 자동 설정
     company_name = current_user.name
 
+     # ✅ 가장 최신 리포트 created_date 가져오기
+
+    result = await db.execute(
+        select(UserReport)
+        .where(UserReport.user_id == current_user.user_id)
+        .order_by(desc(UserReport.created_date))
+        .limit(1)
+    )
+    latest_report = result.scalars().first()
+    latest_created_date = latest_report.created_date if latest_report else None
+
     # ✅ 유저 기반 분석 메타 정보 구성
     user_data = {
         "industry": current_user.industry.value if current_user.industry else "정보 없음",
         "scale": "스타트업" if current_user.scale < 50 else "중소기업" if current_user.scale < 300 else "대기업",
         "interests": current_user.interests.value if current_user.interests else "정보 없음",
         "budget_size": current_user.budget_size,
-        "created_date": current_user.created_date,
+        "created_date": latest_created_date,
     }
 
     # 1. 벡터 DB 불러오기
