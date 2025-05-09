@@ -1,7 +1,41 @@
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 from langchain_openai import ChatOpenAI
+from langchain_core.output_parsers import JsonOutputParser
+from dotenv import load_dotenv
 
+load_dotenv()
+
+# LLM
+llm = ChatOpenAI(temperature=0, model='gpt-4o-mini', streaming=True)
+
+# JSON Output Parser
+recommend_parser = JsonOutputParser()
+
+# --- Recommend Prompt
+recommend_prompt_template = PromptTemplate.from_template("""
+다음은 [{company_name}]의 웹 검색 결과와 문서 요약 내용입니다.
+
+[웹 검색 정보]
+{web_context}
+
+[문서 요약]
+{pdf_context}
+
+위 정보를 바탕으로 이 회사에 가장 적합한 AI 에이전트를 3개 추천해 주세요.  
+아래 JSON 형식으로 출력하세요:
+
+[
+  {{"에이전트명": "", "적용 부서": "", "적용 사례": "", "연간 절감 시간": "", "도입 난이도": ""}},
+  ...
+]
+""")
+recommend_prompt = recommend_prompt_template.partial(
+    format_instructions=recommend_parser.get_format_instructions()
+)
+recommend_chain = LLMChain(llm=llm, prompt=recommend_prompt, output_parser=recommend_parser)
+
+# --- Summary Prompt
 summary_prompt_template = PromptTemplate.from_template(
     """
 당신은 기업 디지털 전환 분석 전문가입니다.
@@ -11,7 +45,7 @@ summary_prompt_template = PromptTemplate.from_template(
 [🔍 웹 검색 정보]
 {web_context}
 
-[📄 내부 문서 요약]
+[📄 관련 Agent 10개]
 {pdf_context}
 
 이 기업은 아래와 같은 **정확한 사용자 입력 정보**를 바탕으로 분석되어야 합니다:  
@@ -21,8 +55,8 @@ summary_prompt_template = PromptTemplate.from_template(
 - 예산 규모: {budget_size:,}원  
 - 리포트 생성일: {created_date}  
 
-⚠️ 위 수치들은 사용자 데이터베이스에 저장된 실제 값이므로, 분석 결과에 **그대로 반영**되어야 하며, **LLM이 임의로 다른 숫자를 생성하지 마십시오**.
-
+위 수치들은 사용자 데이터베이스에 저장된 실제 값이므로, 분석 결과에 **그대로 반영**되어야 하며, **LLM이 임의로 다른 숫자를 생성하지 마십시오**.
+기술 도입 경험은 웹 검색 정보 내용을 기반으로 실제 기업의 기술 도입 관련 사례, 수준, 경험을 요약하여 작성하세요.
 이제 위 정보를 기반으로 다음과 같은 형식의 **AI 도입 리포트 (Markdown)** 를 작성해 주세요.
 
 ---
@@ -33,7 +67,7 @@ summary_prompt_template = PromptTemplate.from_template(
 > 분석 대상: {company_name}  
 > 산업군: {industry}  
 > 기업 규모: {scale}
-> 기술 도입 경험: 내부 문서와 검색 결과에 기반해 요약
+> 기술 도입 경험:
 
 ---
 
@@ -93,9 +127,5 @@ summary_prompt_template = PromptTemplate.from_template(
 """
 )
 
-
 summary_prompt = summary_prompt_template
-
-llm = ChatOpenAI(temperature=0, model='gpt-4o-mini', streaming=True)
-
 summary_chain = LLMChain(llm=llm, prompt=summary_prompt)
