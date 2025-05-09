@@ -1,9 +1,10 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-
 import os
 from fastapi import HTTPException
 
+from api.agent.models.recommended import RecommendedAgent
+from api.agent.models.agent import Agent
 from api.user.models.user_report import UserReport
 from api.user.schemas.user_report import UserCreateReport
 
@@ -19,6 +20,37 @@ async def create_user_report(db: AsyncSession, report_data: UserCreateReport) ->
     await db.commit()
     await db.refresh(new_report)
     return new_report
+
+# ✅ 추천 에이전트 저장
+async def create_recommended_agents(
+    db: AsyncSession,
+    user_id: int,
+    recommended_agents: list[dict]
+):
+    saved_records = []
+
+    for agent_info in recommended_agents:
+        agent_name = agent_info.get("에이전트명")
+
+        # Agent 테이블에서 agent_id 찾기
+        result = await db.execute(select(Agent).where(Agent.name == agent_name))
+        agent_record = result.scalars().first()
+
+        if not agent_record:
+            # 없는 경우 → 스킵하거나 로그 처리
+            print(f"⚠️ Agent '{agent_name}' not found in Agent table.")
+            continue
+
+        # 추천 에이전트 레코드 생성
+        new_rec_agent = RecommendedAgent(
+            user_id=user_id,
+            agent_id=agent_record.agent_id
+        )
+        db.add(new_rec_agent)
+        saved_records.append(new_rec_agent)
+
+    await db.commit()
+    return saved_records
 
 
 # ✅ 유저별 리포트 전체 조회

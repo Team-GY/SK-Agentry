@@ -14,6 +14,7 @@ from pydantic import BaseModel
 from tools import load_vector_db  # 벡터 DB 로더
 from sqlalchemy import select, desc
 from api.user.models.user_report import UserReport
+from api.agent.cruds.agent import create_recommended_agents  # 경로 맞게 import
 
 router = APIRouter(prefix="/agent", tags=["Agent"])
 
@@ -59,7 +60,14 @@ async def run_company_analysis(
         format=ReportTypeEnum.MD
     )
     new_report = await report_crud.create_user_report(db, report_data)
-
+    
+    # 4. 추천된 에이전트 저장
+    await create_recommended_agents(
+        db=db,
+        user_id=current_user.user_id,
+        recommended_agents=result["recommended_agents"]
+    )
+    
     return new_report
 
 
