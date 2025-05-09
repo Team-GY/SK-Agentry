@@ -2,6 +2,7 @@ from langchain_openai import ChatOpenAI
 from langchain.schema import SystemMessage, AIMessage, HumanMessage
 
 class AutoChatbotAgent:
+    display_name = "자동 대화 에이전트"
     def __init__(self, company_name: str = "기본회사", faq_topic: str = "자주 묻는 질문"):
         self.company_name = company_name
         self.faq_topic = faq_topic
