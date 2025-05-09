@@ -10,11 +10,11 @@ from api.utils.enums import ReportTypeEnum
 from api.agent.cruds import agent as report_crud
 
 from analysis import analyze_company  # 분석 로직 및 벡터 DB 로더
-from pydantic import BaseModel
 from tools import load_vector_db  # 벡터 DB 로더
 from sqlalchemy import select, desc
 from api.user.models.user_report import UserReport
 from api.agent.cruds.agent import create_recommended_agents  # 경로 맞게 import
+
 
 router = APIRouter(prefix="/agent", tags=["Agent"])
 
@@ -139,4 +139,12 @@ async def get_report_content(
     content = await report_crud.read_report_markdown_content(report)
     return content
 
-
+@router.get("/detail/{agent_id}")
+async def get_agent_detail(
+    agent_id: int,
+    db: AsyncSession = Depends(get_db),
+):
+    agent_info = await report_crud.get_agent_by_id(db, agent_id)
+    if not agent_info:
+        raise HTTPException(status_code=404, detail="해당 에이전트를 찾을 수 없습니다.")
+    return agent_info
