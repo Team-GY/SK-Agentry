@@ -5,9 +5,14 @@ from tools import search_company
 
 class AIAdoptionAgent:
     display_name = "AI 도입 전략 추천 에이전트"
-    description=""
-    category="기본"  
-    
+    description = (
+        "기업의 규모, 산업군, 관심사 등 정보를 바탕으로 AI 도입 가능성을 진단하고 "
+        "도입 전략 및 예상 효과를 리포트 형태로 제공하는 에이전트입니다. "
+        "웹 및 내부 정보를 종합적으로 활용해 도입 리스크와 전략을 자동으로 제시합니다."
+    )
+    category = "컨설팅"
+    features = "- AI 도입 가능성 평가\n- 예상 리스크 분석\n- 추천 전략 제시"
+
     def __init__(self, tools: list = None, temperature: float = 0.3, model: str = "gpt-4o-mini"):
         self.llm = ChatOpenAI(temperature=temperature, model=model, streaming=True)
 

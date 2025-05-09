@@ -6,6 +6,14 @@ from tools import search_news
 
 class WeeklyNewsAgent:
     display_name = "주간 뉴스 브리핑 에이전트"
+    description = (
+        "지정된 주제(예: 기술, 산업, 금융 등)에 대한 최신 뉴스 콘텐츠를 수집하고 요약하여 "
+        "간결한 주간 리포트 형태로 제공하는 에이전트입니다. "
+        "외부 뉴스 검색 도구를 활용해 실시간 정보를 수집하고 분석합니다."
+    )
+    category = "정보 요약"
+    features = "- 최신 뉴스 요약\n- 주간 리포트 제공\n- 실시간 정보 수집"
+
     def __init__(self, topic: str = "기술", tools: list = None, temperature=0, model_name="gpt-4o-mini"):
         self.topic = topic
         self.llm = ChatOpenAI(temperature=temperature, model=model_name, streaming=True)

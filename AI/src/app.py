@@ -68,11 +68,11 @@ async def sync_registry_to_db(db: AsyncSession):
             db.add(Agent(
                 name=agent_name,
                 display_name=agent_instance.display_name,
-                description=f"{agent_name} 등록됨",
-                category="기본",  # 필요 시 agent_instance로부터 추출
+                description=agent_instance.description,
+                category=agent_instance.category,  
                 llm_type="GPT-4o-mini",
                 language="Python",
-                features="자동 등록됨"
+                features=agent_instance.features,
             ))
 
     for tool_name, func in TOOL_REGISTRY.items():
