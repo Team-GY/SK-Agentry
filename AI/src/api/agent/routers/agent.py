@@ -81,7 +81,7 @@ async def get_my_recommended_agents(
     return result
 
 # ✅ 리포트 전체 조회 (현재 로그인 유저 기준)
-@router.get("/", response_model=list[UserReportResponse])
+@router.get("/getAllReport", response_model=list[UserReportResponse])
 async def get_my_reports(
     db: AsyncSession = Depends(get_db),
     current_user: UserModel = Depends(get_current_user)
@@ -89,6 +89,27 @@ async def get_my_reports(
     reports = await report_crud.get_reports_by_user_id(db, current_user.user_id)
     return reports
 
+# ✅ 전체 에이전트 목록 조회
+@router.get("/all", response_model=list[dict], summary="모든 에이전트 목록 조회")
+async def get_all_agents(
+    db: AsyncSession = Depends(get_db)
+):
+    agents = await report_crud.get_all_agents(db)
+    return [
+        {
+            "agent_id": agent.agent_id,
+            "name": agent.name,
+            "display_name": agent.display_name,
+            "description": agent.description,
+            "category": agent.category,
+            "llm_type": agent.llm_type,
+            "language": agent.language,
+            "features": agent.features,
+            "is_active": agent.is_active,
+            "image_url": agent.image_url,
+        }
+        for agent in agents
+    ]
 
 # ✅ 단일 리포트 조회
 @router.get("/{report_id}", response_model=UserReportResponse)

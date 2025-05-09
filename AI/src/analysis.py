@@ -1,3 +1,4 @@
+from datetime import datetime
 from tools import search_company, search_docs
 from prompts import summary_chain, recommend_chain
 import os
@@ -35,7 +36,7 @@ def analyze_company(company_name, vector_db, user_data):
     recommendation_table = json_to_markdown_table(recommended_agents)
 
     # 3. 날짜 포맷 변환
-    created_date = user_data["created_date"].strftime("%Y년 %m월 %d일")
+    created_date = (user_data.get("created_date") or datetime.today()).strftime("%Y년 %m월 %d일")
 
     # 4. summary_chain 입력값 구성
     summary_input = {
