@@ -120,6 +120,7 @@ async def get_recommended_agents_by_user(
             "display_name": rec.agent.display_name,
             "category": rec.agent.category,
             "llm_type" : rec.agent.llm_type,
+            "image_url": rec.agent.image_url,
         }
         for rec in records
     ]
